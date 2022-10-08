@@ -46,6 +46,7 @@ ENV \
     LC_ALL=C.UTF-8
 
 COPY deps/pydeps.txt /tmp/pydeps.txt
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 
 WORKDIR /home/user
 USER user
@@ -55,28 +56,33 @@ RUN \
     && wget -O \
         /home/user/stable-diffusion-webui/xformers-0.0.14.dev0-cp310-cp310-win_amd64.whl \
         https://github.com/C43H66N12O12S2/stable-diffusion-webui/releases/download/b/xformers-0.0.14.dev0-cp310-cp310-win_amd64.whl \
-    && sed -i "s/COMMANDLINE_ARGS=\"\"/COMMANDLINE_ARGS=\"--xformers\"/g" /home/user/stable-diffusion-webui/webui-user.sh \
+    && sed -i "s/COMMANDLINE_ARGS=\"\"/COMMANDLINE_ARGS=\"--xformers --listen\"/g" /home/user/stable-diffusion-webui/webui-user.sh \
     && python3 -m venv /home/user/stable-diffusion-webui/venv \
     && source /home/user/stable-diffusion-webui/venv/bin/activate \
     && python3 -m pip install $(cat /tmp/pydeps.txt) \
-    && rm -rf /tmp/* \
+    && chmod +x /home/user/stable-diffusion-webui/webui-user.sh \
+    && git clone https://github.com/facebookresearch/xformers.git /home/user/stable-diffusion-webui/repositories/xformers \
+    && cd /home/user/stable-diffusion-webui/repositories/xformers \
+    && git submodule update --init --recursive \
+    && pip install -r requirements.txt \
+    && pip install -e .
 
 LABEL title="Stable-Diffusion-Webui-Docker"
 LABEL version="1.0"
 
 EXPOSE 7860
-ENTRYPOINT [ "/home/user/stable-diffusion-webui/webui.sh" ]
+ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
 
 # DOCKER_BUILDKIT=1 docker build --no-cache \
 # --build-arg BASEIMAGE=nvidia/cuda \
-# --build-arg BASETAG=11.3.1-runtime-ubuntu20.04 \
+# --build-arg BASETAG=10.2-devel-ubuntu18.04 \
 # -t kestr3l/stable-diffusion-webui:1.0.0 \
 # -f Dockerfile .
 
 # docker run -it --rm \
 #     -e NVIDIA_DISABLE_REQUIRE=1 \
 #     -e NVIDIA_DRIVER_CAPABILITIES=all \
-#     -v <DIR_TO_CHECKPOINT>:/home/user/stable-diffusion-webui/models/Stabble-diffusion
+#     -v <DIR_TO_CHECKPOINT>:/home/user/stable-diffusion-webui/models/Stable-diffusion \
 #     -p <PORT>:7860 \
 #     --gpus all \
 #     --privileged \
