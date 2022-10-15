@@ -66,7 +66,7 @@ docker run -it --rm \                                                           
 
 ## 2 xformers-builder (Optional)
 
-> Build process of `xformers` is referenced from [리눅스 xformers 빌드 방법 (GPU 불필요) (작성 중)](https://arca.live/b/aiart/6066407)5
+> Build process of `xformers` is referenced from [리눅스 xformers 빌드 방법 (GPU 불필요) (작성 중)](https://arca.live/b/aiart/6066407)
 
 ### 2.1 Build `xformers-builder` Docker Image
 
