@@ -1,4 +1,4 @@
-# 1.0.0
+# 1.0.0 (20221009)
 
 - `nvidia/cuda:11.3.1-runtime-ubuntu20.04`
 - Initial batch
