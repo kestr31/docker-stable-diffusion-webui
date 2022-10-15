@@ -54,11 +54,14 @@ docker run -it --rm \
 
 ```shell
 docker run -it --rm \                                                                                              -e NVIDIA_DISABLE_REQUIRE=1 \
-    -e NVIDIA_DRIVER_CAPABILITIES=all \                                                                            -v <DIR_TO_CHECKPOINT>:/home/user/stable-diffusion-webui/models/Stabble-diffusioni
+    -e NVIDIA_DRIVER_CAPABILITIES=all \
+    -v <DIR_TO_CHECKPOINT>:/home/user/stable-diffusion-webui/models/Stable-diffusion \
     -v <DIR_TO_ENTRYPOINT.SH>:/usr/local/bin/entrypoint.sh
     -p <PORT>:7860 \
     --name stable-diffusion-webui-dbg \
-    --gpus all \                                                                                                   --privileged \                                                                                                 kestr3l/stable-diffusion-webui:1.0.1
+    --gpus all \
+    --privileged \
+    kestr3l/stable-diffusion-webui:1.0.1
 ```
 
 - Then enter the container by `docker exec -it stable-diffusion-webui-dbg bash'
