@@ -87,4 +87,4 @@ ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
 #     -p <PORT>:7860 \
 #     --gpus all \
 #     --privileged \
-#     kestr3l/stable-diffusion-webui:1.0.0
+#     kestr3l/stable-diffusion-webui:1.0.1
