@@ -45,7 +45,8 @@ ENV \
     LANG=C.UTF-8 \
     LC_ALL=C.UTF-8
 
-COPY deps/pydeps.txt /tmp/pydeps.txt
+COPY --chown=user:user deps/pydeps.txt /home/user/tmp/pydeps.txt
+COPY --chown=user:user xformers/xformers-0.0.14.dev0-cp38-cp38-linux_x86_64.whl /home/user/tmp/xformers-0.0.14.dev0-cp38-cp38-linux_x86_64.whl
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 
 WORKDIR /home/user
@@ -53,30 +54,30 @@ USER user
 
 RUN \
     git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git \
-    && wget -O \
-        /home/user/stable-diffusion-webui/xformers-0.0.14.dev0-cp310-cp310-win_amd64.whl \
-        https://github.com/C43H66N12O12S2/stable-diffusion-webui/releases/download/b/xformers-0.0.14.dev0-cp310-cp310-win_amd64.whl \
-    && sed -i "s/COMMANDLINE_ARGS=\"\"/COMMANDLINE_ARGS=\"--xformers --listen\"/g" /home/user/stable-diffusion-webui/webui-user.sh \
+    && sed -i "s/COMMANDLINE_ARGS=\"\"/COMMANDLINE_ARGS=\"--xformers --listen --skip-torch-cuda-test\"/g" /home/user/stable-diffusion-webui/webui-user.sh \
+    && curl -o /home/user/stable-diffusion-webui/javascript/auto_completion.js https://greasyfork.org/scripts/452929-webui-%ED%83%9C%EA%B7%B8-%EC%9E%90%EB%8F%99%EC%99%84%EC%84%B1/code/WebUI%20%ED%83%9C%EA%B7%B8%20%EC%9E%90%EB%8F%99%EC%99%84%EC%84%B1.user.js \
     && python3 -m venv /home/user/stable-diffusion-webui/venv \
     && source /home/user/stable-diffusion-webui/venv/bin/activate \
-    && python3 -m pip install $(cat /tmp/pydeps.txt) \
+    && python3 -m pip install $(cat /home/user/tmp/pydeps.txt) \
+    && python3 -m pip install /home/user/tmp/xformers-0.0.14.dev0-cp38-cp38-linux_x86_64.whl \
+    && python3 -m pip install --upgrade --extra-index-url https://download.pytorch.org/whl/cu113 torch torchvision torchaudio \
     && chmod +x /home/user/stable-diffusion-webui/webui-user.sh \
-    && git clone https://github.com/facebookresearch/xformers.git /home/user/stable-diffusion-webui/repositories/xformers \
-    && cd /home/user/stable-diffusion-webui/repositories/xformers \
-    && git submodule update --init --recursive \
-    && pip install -r requirements.txt \
-    && pip install -e .
+    && rm -rf /home/user/tmp
+
+COPY --chown=user:user settings/config.json /home/user/stable-diffusion-webui/config.json
+COPY --chown=user:user settings/ui-config.json /home/user/stable-diffusion-webui/ui-config.json
+COPY --chown=user:user settings/styles.csv /home/user/stable-diffusion-webui/styles.csv
 
 LABEL title="Stable-Diffusion-Webui-Docker"
-LABEL version="1.0"
+LABEL version="1.0.1"
 
 EXPOSE 7860
 ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
 
 # DOCKER_BUILDKIT=1 docker build --no-cache \
 # --build-arg BASEIMAGE=nvidia/cuda \
-# --build-arg BASETAG=10.2-devel-ubuntu18.04 \
-# -t kestr3l/stable-diffusion-webui:1.0.0 \
+# --build-arg BASETAG=11.3-runtime-ubuntu20.04 \
+# -t kestr3l/stable-diffusion-webui:1.0.1 \
 # -f Dockerfile .
 
 # docker run -it --rm \
