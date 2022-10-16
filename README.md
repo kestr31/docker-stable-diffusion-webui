@@ -3,6 +3,9 @@
 - Applied prebuilt [facebookreseasrch/xformers](https://github.com/facebookresearch/xformers)
 - Includes [prompt auto-completion javascript](https://greasyfork.org/ko/scripts/452929-webui-%ED%83%9C%EA%B7%B8-%EC%9E%90%EB%8F%99%EC%99%84%EC%84%B1) credited by [shounksu](https://greasyfork.org/ko/users/815641-shounksu)
 - Image is based on nvidia/cuda:11.3.1-devel-ubuntu20.04 image
+- Prebuilt images are available on Docker Hub:
+  - [kestr3l/stable-diffusion-webui](https://hub.docker.com/r/kestr3l/stable-diffusion-webui)
+  - [kestr3l/xformer-builder](https://hub.docker.com/r/kestr3l/xformer-builder)
 
 ## 0 Prequisites
 
@@ -19,7 +22,7 @@
 DOCKER_BUILDKIT=1 docker build --no-cache \
 --build-arg BASEIMAGE=nvidia/cuda \
 --build-arg BASETAG=11.3.1-devel-ubuntu20.04 \
--t kestr3l/stable-diffusion-webui:1.0.0 \
+-t kestr3l/stable-diffusion-webui:1.0.2 \
 -f Dockerfile .
 ```
 
@@ -29,16 +32,24 @@ DOCKER_BUILDKIT=1 docker build --no-cache \
 - You need to prepare a model on your own since I can't provide it
 - Based on your need, set your own port to connect
   - Instead of setting a port, you can use `--net host` which makes container to use host network adapter
+- Mount any settings file or volume based on your need
+  - Example command below contains all common possible options
 
 ```shell
 docker run -it --rm \
     -e NVIDIA_DISABLE_REQUIRE=1 \
     -e NVIDIA_DRIVER_CAPABILITIES=all \
-    -v <DIR_TO_CHECKPOINT>:/home/user/stable-diffusion-webui/models/Stabble-diffusion
+    -e UID=$(id -u) \
+    -e GID=$(id -g) \
+    -v <DIR_TO_CHECKPOINT>:/home/user/stable-diffusion-webui/models/Stable-diffusion \
+    -v <DIR_FOR_OUTPUT>:/home/user/stable-diffusion-webui/outputs \
+    -v <DIR_TO_CONFIG>:/home/user/stable-diffusion-webui/config.json \
+    -v <DIR_TO_STYLES>:/home/user/stable-diffusion-webui/models/Stable-diffusion/styles.csv \
+    -v <DIR_TO_UI-CONFIG>:/home/user/ui-config.json.bak \
     -p <PORT>:7860 \
     --gpus all \
     --privileged \
-    kestr3l/stable-diffusion-webui:1.0.0
+    kestr3l/stable-diffusion-webui:1.0.2
 ```
 
 - Then connect to `http://localhost:7860` or `http://<private_ip>:7860`
@@ -53,15 +64,21 @@ docker run -it --rm \
 - Then volume-mount modified `entrypoint.sh` when generaeting debug container
 
 ```shell
-docker run -it --rm \                                                                                              -e NVIDIA_DISABLE_REQUIRE=1 \
+docker run -it --rm \
+    -e NVIDIA_DISABLE_REQUIRE=1 \
     -e NVIDIA_DRIVER_CAPABILITIES=all \
+    -e UID=$(id -u) \
+    -e GID=$(id -g) \
     -v <DIR_TO_CHECKPOINT>:/home/user/stable-diffusion-webui/models/Stable-diffusion \
     -v <DIR_TO_ENTRYPOINT.SH>:/usr/local/bin/entrypoint.sh
+    -v <DIR_FOR_OUTPUT>:/home/user/stable-diffusion-webui/outputs \
+    -v <DIR_TO_CONFIG>:/home/user/stable-diffusion-webui/config.json \
+    -v <DIR_TO_STYLES>:/home/user/stable-diffusion-webui/models/Stable-diffusion/styles.csv \
+    -v <DIR_TO_UI-CONFIG>:/home/user/ui-config.json.bak \
     -p <PORT>:7860 \
-    --name stable-diffusion-webui-dbg \
     --gpus all \
     --privileged \
-    kestr3l/stable-diffusion-webui:1.0.1
+    kestr3l/stable-diffusion-webui:1.0.2
 ```
 
 - Then enter the container by `docker exec -it stable-diffusion-webui-dbg bash'
@@ -109,3 +126,4 @@ docker run -it --rm \
 2. [facebookreseasrch/xformers](https://github.com/facebookresearch/xformers)
 3. [WebUI 태그 자동완성](https://greasyfork.org/ko/scripts/452929-webui-%ED%83%9C%EA%B7%B8-%EC%9E%90%EB%8F%99%EC%99%84%EC%84%B1)
 4. [리눅스 xformers 빌드 방법 (GPU 불필요) (작성 중)](https://arca.live/b/aiart/60664075) 
+5. [Is it possible to map a user inside the docker container to an outside user?](https://stackoverflow.com/questions/57776452/is-it-possible-to-map-a-user-inside-the-docker-container-to-an-outside-user)

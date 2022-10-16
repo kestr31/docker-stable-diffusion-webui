@@ -15,5 +15,7 @@
 - `nvidia/cuda:11.3.1-runtime-ubuntu20.04`
 - Updated `stable-diffusion-webui` to commit [36a0ba3](https://github.com/AUTOMATIC1111/stable-diffusion-webui/commit/36a0ba357ab0742c3c4a28437b68fb29a235afbe)
   - `Added Refresh Button to embedding and hypernetwork names in Train Tab`
-- Make ui-config-json to be applied and persistent
+- Resolved file permission issues due to different UID & GIDs
+  - Now, any volume or file can be mapped to host volume
 - Updated [prompt auto-completion javascript](https://greasyfork.org/ko/scripts/452929-webui-%ED%83%9C%EA%B7%B8-%EC%9E%90%EB%8F%99%EC%99%84%EC%84%B1) credited by [shounksu](https://greasyfork.org/ko/users/815641-shounksu)
+- [Docker Hub](https://hub.docker.com/layers/kestr3l/stable-diffusion-webui/1.0.1/images/
