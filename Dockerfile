@@ -54,7 +54,7 @@ USER user
 
 RUN \
     git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git \
-    && git -C /home/user/stable-diffusion-webui reset --hard be1596c \
+    && git -C /home/user/stable-diffusion-webui reset --hard 36a0ba3 \
     && sed -i "s/COMMANDLINE_ARGS=\"\"/COMMANDLINE_ARGS=\"--xformers --listen --skip-torch-cuda-test\"/g" /home/user/stable-diffusion-webui/webui-user.sh \
     && curl -o /home/user/stable-diffusion-webui/javascript/auto_completion.js https://greasyfork.org/scripts/452929-webui-%ED%83%9C%EA%B7%B8-%EC%9E%90%EB%8F%99%EC%99%84%EC%84%B1/code/WebUI%20%ED%83%9C%EA%B7%B8%20%EC%9E%90%EB%8F%99%EC%99%84%EC%84%B1.user.js \
     && python3 -m venv /home/user/stable-diffusion-webui/venv \
@@ -70,7 +70,7 @@ COPY --chown=user:user settings/styles.csv /home/user/stable-diffusion-webui/sty
 COPY --chown=user:user settings/ui-config.json /home/user/ui-config.json.bak
 
 LABEL title="Stable-Diffusion-Webui-Docker"
-LABEL version="1.0.1"
+LABEL version="1.0.2"
 
 EXPOSE 7860
 ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
