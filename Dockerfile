@@ -66,8 +66,8 @@ RUN \
     && rm -rf /home/user/tmp
 
 COPY --chown=user:user settings/config.json /home/user/stable-diffusion-webui/config.json
-COPY --chown=user:user settings/ui-config.json /home/user/stable-diffusion-webui/ui-config.json
 COPY --chown=user:user settings/styles.csv /home/user/stable-diffusion-webui/styles.csv
+COPY --chown=user:user settings/ui-config.json /home/user/ui-config.json.bak
 
 LABEL title="Stable-Diffusion-Webui-Docker"
 LABEL version="1.0.1"
@@ -85,6 +85,9 @@ ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
 #     -e NVIDIA_DISABLE_REQUIRE=1 \
 #     -e NVIDIA_DRIVER_CAPABILITIES=all \
 #     -v <DIR_TO_CHECKPOINT>:/home/user/stable-diffusion-webui/models/Stable-diffusion \
+#     -v <DIR_TO_UI-CONFIG>:/home/user/stable-diffusion-webui/models/Stable-diffusion/ui-config.json \
+#     -v <DIR_TO_CONFIG>:/home/user/stable-diffusion-webui/models/Stable-diffusion/config.json.bak \
+#     -v <DIR_TO_STYLES>:/home/user/stable-diffusion-webui/models/Stable-diffusion/styles.csv \
 #     -p <PORT>:7860 \
 #     --gpus all \
 #     --privileged \
