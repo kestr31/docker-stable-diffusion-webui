@@ -32,8 +32,11 @@ RUN \
     --mount=type=cache,target=/var/lib/apt,from=stage_apt,source=/var/lib/apt \
     --mount=type=cache,target=/etc/apt/sources.list.d,from=stage_apt,source=/etc/apt/sources.list.d \
 	apt-get install --no-install-recommends -y $(cat /tmp/aptdeps.txt) \
-    && rm -rf /tmp/* \
-    && useradd -m user
+    && rm -rf /tmp/*
+
+RUN \
+    groupadd user \
+    && useradd -ms /bin/bash user -g user
 
 
 FROM stage_deps as stage_app
@@ -50,7 +53,6 @@ COPY --chown=user:user xformers/xformers-0.0.14.dev0-cp38-cp38-linux_x86_64.whl 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 
 WORKDIR /home/user
-USER user
 
 RUN \
     git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git \
@@ -65,9 +67,13 @@ RUN \
     && chmod +x /home/user/stable-diffusion-webui/webui-user.sh \
     && rm -rf /home/user/tmp
 
-COPY --chown=user:user settings/config.json /home/user/stable-diffusion-webui/config.json
-COPY --chown=user:user settings/styles.csv /home/user/stable-diffusion-webui/styles.csv
-COPY --chown=user:user settings/ui-config.json /home/user/ui-config.json.bak
+COPY settings/run.sh /home/user/stable-diffusion-webui/run.sh
+COPY settings/config.json /home/user/stable-diffusion-webui/config.json
+COPY settings/styles.csv /home/user/stable-diffusion-webui/styles.csv
+COPY settings/ui-config.json /home/user/ui-config.json.bak
+
+RUN \
+    chown -R user:user /home/user
 
 LABEL title="Stable-Diffusion-Webui-Docker"
 LABEL version="1.0.2"
@@ -78,17 +84,20 @@ ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
 # DOCKER_BUILDKIT=1 docker build --no-cache \
 # --build-arg BASEIMAGE=nvidia/cuda \
 # --build-arg BASETAG=11.3-runtime-ubuntu20.04 \
-# -t kestr3l/stable-diffusion-webui:1.0.1 \
+# -t kestr3l/stable-diffusion-webui:1.0.2 \
 # -f Dockerfile .
 
 # docker run -it --rm \
 #     -e NVIDIA_DISABLE_REQUIRE=1 \
 #     -e NVIDIA_DRIVER_CAPABILITIES=all \
+#     -e UID=$(id -u) \
+#     -e GID=$(id -g) \
 #     -v <DIR_TO_CHECKPOINT>:/home/user/stable-diffusion-webui/models/Stable-diffusion \
-#     -v <DIR_TO_UI-CONFIG>:/home/user/stable-diffusion-webui/models/Stable-diffusion/ui-config.json \
-#     -v <DIR_TO_CONFIG>:/home/user/stable-diffusion-webui/models/Stable-diffusion/config.json.bak \
+#     -v <DIR_FOR_OUTPUT>:/home/user/stable-diffusion-webui/outputs \
+#     -v <DIR_TO_CONFIG>:/home/user/stable-diffusion-webui/config.json \
 #     -v <DIR_TO_STYLES>:/home/user/stable-diffusion-webui/models/Stable-diffusion/styles.csv \
+#     -v <DIR_TO_UI-CONFIG>:/home/user/ui-config.json.bak \
 #     -p <PORT>:7860 \
 #     --gpus all \
 #     --privileged \
-#     kestr3l/stable-diffusion-webui:1.0.1
+#     kestr3l/stable-diffusion-webui:1.0.2

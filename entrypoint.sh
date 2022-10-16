@@ -1,23 +1,30 @@
 #! /bin/sh
-cd /home/user/stable-diffusion-webui
-/home/user/stable-diffusion-webui/webui-user.sh
-/home/user/stable-diffusion-webui/webui.sh &
 
-# Wait unti ui-config.json is generated
-# This is necessary since webui.sh overwrites existing ui-config.json to default value when startup
-UI_CONFIG_DIR=$(find /home/user/stable-diffusion-webui -maxdepth 1 -type f -name 'ui-config.json')
+# Change UID and GUID per user
+set -e
+set -u
 
-while [[ -z ${UI_CONFIG_DIR} ]];
-do
-    UI_CONFIG_DIR=$(find /home/user/stable-diffusion-webui -maxdepth 1 -type f -name 'ui-config.json')
-	echo "Waiting until Stable-Diffusion-WebUI starts up..."
-	sleep 1s
-done
+: "${UID:=0}"
+: "${GID:=${UID}}"
 
-# If ui-config.json is generated, overwrite it
-echo "Stable-Diffusion-WebUI Configured!"
-echo "Restoring backup ui-config.json"
-mv /home/user/ui-config.json.bak /home/user/stable-diffusion-webui/ui-config.json
+if [ "$#" = 0 ]; then
+    set -- "$(command -v bash 2>/dev/null || command -v sh)" -l
+fi
+
+if [ ${UID} != 0 ]; then
+        usermod -u ${UID} user -o 2>/dev/null && {
+                groupmod -g ${GID} user 2>/dev/null ||
+                usermod -a -G ${GID} user
+        }
+fi
+
+echo "Started changing permissions"
+echo "Please wait until next message appears..."
+echo "It will take some time"
+chown -R user:user /home/user
+echo "Reconfigured!"
+
+su -c /home/user/stable-diffusion-webui/run.sh user
 
 # Leave container to be persistent
 sleep infinity
