@@ -19,3 +19,16 @@
   - Now, any volume or file can be mapped to host volume
 - Updated [prompt auto-completion javascript](https://greasyfork.org/ko/scripts/452929-webui-%ED%83%9C%EA%B7%B8-%EC%9E%90%EB%8F%99%EC%99%84%EC%84%B1) credited by [shounksu](https://greasyfork.org/ko/users/815641-shounksu)
 - [Docker Hub](https://hub.docker.com/layers/kestr3l/stable-diffusion-webui/1.0.1/images/
+
+# 1.1.0 (2023-01-18)
+
+- `nvidia/cuda:11.7.1-devel-ubuntu22.04`
+- Updated `stable-diffusion-webui` to commit [dac59b9](https://github.com/AUTOMATIC1111/stable-diffusion-webui/commit/dac59b9b073f86508d3ec787ff731af2e101fbcc)
+- `xformers` is not built separately now. Build and install process is included inside the image.
+  - `xformers` commit id: [814314d](https://github.com/facebookresearch/xformers/commit/814314dfc207836839c57613c0354fef6e07fa2d)
+- Changed docker volume mapping structure
+  - Directories that can be mapped: `models`, `VAE`, `outputs`, `styles`, `extensions`
+  - Files that can be mapped: `config.json`, `ui-config.json`, `webui-user.sh`
+- Updated [prompt auto-completion javascript](https://greasyfork.org/ko/scripts/452929-webui-%ED%83%9C%EA%B7%B8-%EC%9E%90%EB%8F%99%EC%99%84%EC%84%B1) credited by [shounksu](https://greasyfork.org/ko/users/815641-shounksu)
+- Added `LICENSE` based on [AUTOMATIC111's LICENSE](https://github.com/AUTOMATIC1111/stable-diffusion-webui/blob/master/LICENSE.txt)
+- [Docker Hub](https://hub.docker.com/layers/kestr3l/stable-diffusion-webui/1.1.1/images/
