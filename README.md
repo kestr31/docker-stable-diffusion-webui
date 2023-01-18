@@ -1,16 +1,17 @@
 # Stable-Diffusion-Webui-Docker
 - Dockerized Stable-Diffusion-Webui based on [AUTOMATIC1111/stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui)
-- Applied prebuilt [facebookreseasrch/xformers](https://github.com/facebookresearch/xformers)
+- Includes [facebookreseasrch/xformers](https://github.com/facebookresearch/xformers)
 - Includes [prompt auto-completion javascript](https://greasyfork.org/ko/scripts/452929-webui-%ED%83%9C%EA%B7%B8-%EC%9E%90%EB%8F%99%EC%99%84%EC%84%B1) credited by [shounksu](https://greasyfork.org/ko/users/815641-shounksu)
-- Image is based on nvidia/cuda:11.3.1-devel-ubuntu20.04 image
+- Image is based on nvidia/cuda:11.7.1-devel-ubuntu22.04 image
 - Prebuilt images are available on Docker Hub:
   - [kestr3l/stable-diffusion-webui](https://hub.docker.com/r/kestr3l/stable-diffusion-webui)
-  - [kestr3l/xformer-builder](https://hub.docker.com/r/kestr3l/xformer-builder)
 
 ## 0 Prequisites
 
+- Linux environment (WSL2 is fine)
 - 'Appropriate' GPU
 - [docker-ce](https://docs.docker.com/engine/install/ubuntu/#install-using-the-convenience-script)
+- [docker-compose](https://docs.docker.com/compose/install/)
 - [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html)
 - Basic knowledges of Linux commands
 
@@ -21,10 +22,12 @@
 ```shell
 DOCKER_BUILDKIT=1 docker build --no-cache \
 --build-arg BASEIMAGE=nvidia/cuda \
---build-arg BASETAG=11.3.1-devel-ubuntu20.04 \
--t kestr3l/stable-diffusion-webui:1.0.2 \
+--build-arg BASETAG=11.7.1-devel-ubuntu20.04 \
+-t kestr3l/stable-diffusion-webui:1.1.0 \
 -f Dockerfile .
 ```
+
+> Build may fail on WSL2. If so, try to build it on native linux environment.
 
 ### 1.2 Running `docker-stable-diffusion-webui` Container
 
@@ -37,90 +40,96 @@ DOCKER_BUILDKIT=1 docker build --no-cache \
 
 ```shell
 docker run -it --rm \
+    --name stable-diffusion-webui \
     -e NVIDIA_DISABLE_REQUIRE=1 \
     -e NVIDIA_DRIVER_CAPABILITIES=all \
     -e UID=$(id -u) \
     -e GID=$(id -g) \
-    -v <DIR_TO_CHECKPOINT>:/home/user/stable-diffusion-webui/models/Stable-diffusion \
-    -v <DIR_FOR_OUTPUT>:/home/user/stable-diffusion-webui/outputs \
-    -v <DIR_TO_CONFIG>:/home/user/stable-diffusion-webui/config.json \
-    -v <DIR_TO_STYLES>:/home/user/stable-diffusion-webui/models/Stable-diffusion/styles.csv \
-    -v <DIR_TO_UI-CONFIG>:/home/user/ui-config.json.bak \
-    -p <PORT>:7860 \
+    -v <YOUR_DIRECTORY_TO_MODELS>:/home/user/stable-diffusion-webui/models/Stable-diffusion
+    -v <YOUR_DIRECTORY_TO_OUTPUT>:/home/user/stable-diffusion-webui/outputs
+    -v <YOUR_DIRECTORY_TO_STYLES>:/home/user/stable-diffusion-webui/styles
+    -v <YOUR_DIRECTORY_TO_EXTENSIONS>:/home/user/stable-diffusion-webui/models/extensions
+    -v <YOUR_DIRECTORY_TO_VAE>:/home/user/stable-diffusion-webui/models/VAE
+    -v <YOUR_DIRECTORY_TO_config.json>:/home/user/stable-diffusion-webui/config.json
+    -v <YOUR_DIRECTORY_TO_ui-config.json>:/home/user/ui-config.json.bak
+    -v <YOUR_DIRECTORY_TO_webui-user.sh>:/home/user/stable-diffusion-webui/webui-user.sh
+    -p <YOUR_PREFFERED_PORT>:7860 \
     --gpus all \
     --privileged \
-    kestr3l/stable-diffusion-webui:1.0.2
+    kestr3l/stable-diffusion-webui:1.1.0
 ```
 
-- Then connect to `http://localhost:7860` or `http://<private_ip>:7860`
-- If you want to save `ui-config.json`, `config.json`, `styles.csv` regardless of container state, map:
-  - `-v /dir/to/ui-config.json:/home/user/stable-diffusion-webui/ui-config.json`
-  - `-v /dir/to/config.json:/home/user/stable-diffusion-webui/config.json`
-  - `-v /dir/to/styles.csv:/home/user/stable-diffusion-webui/styles.csv`
+> Use `-itd` instead of `-d` for background execution
 
-### 1.3 Debugging `stable-diffusion-webui` Docker Image
+- If you prefer `docker-compose`, simply run following command after modifying given `docker-compose.yml`
 
-- Comment-out all lines except `sleep infinity` in `entrypoint.sh`
-- Then volume-mount modified `entrypoint.sh` when generaeting debug container
+```shell
+docker-compose up
+```
+
+> To run it on background, add `-d`
+
+- Then connect to `http://localhost:<YOUR_PREFFERED_PORT>` or `http://<private_ip>:<YOUR_PREFFERED_PORT>`
+
+### 1.3 Mapping Directories and Files to the Host
+
+- Map directories as below to add new models, styles or VAEs in easy way:
+  - If you want to add a new elements, simple copy a file into mapped directory
+  - For example, simpley copy `.safetensor` file into mapped model directory for tyring a new model
+
+```shell
+-v <YOUR_DIRECTORY_TO_MODELS>:/home/user/stable-diffusion-webui/models/Stable-diffusion
+-v <YOUR_DIRECTORY_TO_STYLES>:/home/user/stable-diffusion-webui/styles
+-v <YOUR_DIRECTORY_TO_VAE>:/home/user/stable-diffusion-webui/models/VAE
+-v <YOUR_DIRECTORY_TO_EXTENSIONS>:/home/user/stable-diffusion-webui/models/extensions
+```
+
+> Mapping some directories will require corresponding commandline prompt.
+> - Mapping `styles` directory always require `--styles-file styles/styles.csv
+> - Mapping extensions directory with `--listen` always require `--enable-insecure-extension-access`
+
+- Map `output` directory as below to retrieve output imaged through host directory:
+
+```shell
+-v <YOUR_DIRECTORY_TO_OUTPUT>:/home/user/stable-diffusion-webui/outputs
+```
+
+- Map following files to keep settings of the webui
+  - `webui-user.sh` sets commandline prompts for running the WebUI
+  - **Commandline prompt MUST INCLUDE** these: `--xformers --skip-torch-cuda-test --styles-file styles/styles.csv`
+  - Recommended prompt is: `--listen --enable-insecure-extension-access --xformers --skip-torch-cuda-test --gradio-auth <USERNAME>:<PASSWORD> --styles-file styles/styles.csv`
+
+```shell
+    -v <YOUR_DIRECTORY_TO_config.json>:/home/user/stable-diffusion-webui/config.json
+    -v <YOUR_DIRECTORY_TO_ui-config.json>:/home/user/ui-config.json.bak
+    -v <YOUR_DIRECTORY_TO_webui-user.sh>:/home/user/stable-diffusion-webui/webui-user.sh
+```
+
+### 1.4 Debugging `stable-diffusion-webui` Docker Image
+
+- Replace `entrypoint.sh to entrypoint-debug.sh`
+- This will make container do 'nothing'. So that user can try anything manually
+- Mount additional volumes based on your need
 
 ```shell
 docker run -it --rm \
+    --name stable-diffusion-webui-dbg \
     -e NVIDIA_DISABLE_REQUIRE=1 \
     -e NVIDIA_DRIVER_CAPABILITIES=all \
     -e UID=$(id -u) \
     -e GID=$(id -g) \
-    -v <DIR_TO_CHECKPOINT>:/home/user/stable-diffusion-webui/models/Stable-diffusion \
-    -v <DIR_TO_ENTRYPOINT.SH>:/usr/local/bin/entrypoint.sh
-    -v <DIR_FOR_OUTPUT>:/home/user/stable-diffusion-webui/outputs \
-    -v <DIR_TO_CONFIG>:/home/user/stable-diffusion-webui/config.json \
-    -v <DIR_TO_STYLES>:/home/user/stable-diffusion-webui/models/Stable-diffusion/styles.csv \
-    -v <DIR_TO_UI-CONFIG>:/home/user/ui-config.json.bak \
-    -p <PORT>:7860 \
+    ....
+    -v <YOUR_DIRECTORY_TO_entrypoint-debug.sh>:/usr/local/bin/entrypoint.sh
+    -p <YOUR_PREFFERED_PORT>:7860 \
     --gpus all \
     --privileged \
-    kestr3l/stable-diffusion-webui:1.0.2
+    kestr3l/stable-diffusion-webui:1.1.0
 ```
 
 - Then enter the container by `docker exec -it stable-diffusion-webui-dbg bash'
-- If you need a root previlege, use `docker exec -it --user root stable-diffusion-webui-dbg bash'
+- If you need to act as `user` instead of `root`, type `su user`
 
-## 2 xformers-builder (Optional)
-
-> Build process of `xformers` is referenced from [리눅스 xformers 빌드 방법 (GPU 불필요) (작성 중)](https://arca.live/b/aiart/6066407)
-
-### 2.1 Build `xformers-builder` Docker Image
-
-```shell
-DOCKER_BUILDKIT=1 docker build --no-cache \
---build-arg BASEIMAGE=nvidia/cuda \
---build-arg BASETAG=11.3.1-devel-ubuntu20.04 \
--t kestr3l/xformer-builder:cu113-1.0.0 \
--f Dockerfile .
-```
-
-### 2.2 Build xfomers using `xformers-builder` Container
-
-- Clone [facebookresearch/xformers](https://github.com/facebookresearch/xformers) and update submodules
-  - `git submodule update --init --recursive`
-- Then mount xformers directory into docker container. Set `MAX_JOBS` based on your need
-
-```
-docker run -it --rm \
-     -e NVIDIA_DISABLE_REQUIRE=1 \
-     -e NVIDIA_DRIVER_CAPABILITIES=all \
-     -e MAX_JOBS=$(nproc) \
-     -v /dir/to/xformers/repo:/root/xformers \
-     --gpus all \
-     --privileged \
-     kestr3l/xformer-builder:cu113-1.0.0
-```
-
-- `.whl` file will be generated on `xforemrs/dist` directory
-
-> An image and an entrypoint is based on CUDA 11.3
-> You can modify it based on your need and for use in custom environment
-
-## 3 References
+## 2 References
 
 1. [AUTOMATIC1111/stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui)
 2. [facebookreseasrch/xformers](https://github.com/facebookresearch/xformers)
