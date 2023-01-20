@@ -31,10 +31,11 @@
   - Files that can be mapped: `config.json`, `ui-config.json`, `webui-user.sh`
 - Updated [prompt auto-completion javascript](https://greasyfork.org/ko/scripts/452929-webui-%ED%83%9C%EA%B7%B8-%EC%9E%90%EB%8F%99%EC%99%84%EC%84%B1) credited by [shounksu](https://greasyfork.org/ko/users/815641-shounksu)
 - Added `LICENSE` based on [AUTOMATIC111's LICENSE](https://github.com/AUTOMATIC1111/stable-diffusion-webui/blob/master/LICENSE.txt)
-- [Docker Hub](https://hub.docker.com/layers/kestr3l/stable-diffusion-webui/1.1.1/images/
+- [Docker Hub](https://hub.docker.com/layers/kestr3l/stable-diffusion-webui/1.1.1/images/)
 
 # 1.1.1 (2023-01-11)
 
 - `nvidia/cuda:11.7.1-devel-ubuntu22.04`
 - Removed redundant blank on env. var. settings on `docker-compose.yml` which might cause an error
 - Fixed mismatching directory on `run.sh` since `styles.csv` was moved to `styles/styles.csv`
+- [DockerHub](https://hub.docker.com/layers/kestr3l/stable-diffusion-webui/1.1.1/images/sha256-37617664832c4a495765faae143688e74ea45d33240ab195cac7bb345ffbefed?context=explore)
