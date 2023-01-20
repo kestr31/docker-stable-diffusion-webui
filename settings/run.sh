@@ -3,7 +3,7 @@
 cd /home/user/stable-diffusion-webui
 /home/user/stable-diffusion-webui/webui-user.sh
 /home/user/stable-diffusion-webui/webui.sh &
-chmod 644 /home/user/stable-diffusion-webui/styles.csv
+chmod 644 /home/user/stable-diffusion-webui/styles/styles.csv
 
 # Wait unti ui-config.json is generated
 # This is necessary since webui.sh overwrites existing ui-config.json to default value when startup
