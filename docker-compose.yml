@@ -5,8 +5,8 @@ services:
     restart: unless-stopped
     container_name: stable-diffusion-webui
     environment:
-      - NVIDIA_DISABLE_REQUIRE = 1
-      - NVIDIA_DRIVER_CAPABILITIES = all
+      - NVIDIA_DISABLE_REQUIRE=1
+      - NVIDIA_DRIVER_CAPABILITIES=all
       - UID=<YOUR_UID>
       - GID=<YOUR_GID>
       # Get UID and GID using following commands:
