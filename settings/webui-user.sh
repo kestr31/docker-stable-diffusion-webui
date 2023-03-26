@@ -10,7 +10,12 @@
 #clone_dir="stable-diffusion-webui"
 
 # Commandline arguments for webui.py, for example: export COMMANDLINE_ARGS="--medvram --opt-split-attention"
-export COMMANDLINE_ARGS="--listen --enable-insecure-extension-access --xformers --skip-torch-cuda-test --gradio-auth <USERNAME>:<PASSWORD> --styles-file styles/styles.csv"
+export COMMANDLINE_ARGS="--listen \
+    --enable-insecure-extension-access \
+    --xformers --skip-torch-cuda-test \
+    --gradio-auth-path ${DIR_GRADIO_AUTH} \
+    --styles-file styles/styles.csv \
+    --no-download-sd-model"
 
 # python3 executable
 #python_cmd="python3"
