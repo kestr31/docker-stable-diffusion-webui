@@ -23,6 +23,8 @@ services:
       - <YOUR_DIRECTORY_TO_VAE>:/home/user/stable-diffusion-webui/models/VAE
       - <YOUR_DIRECTORY_TO_config.json>:/home/user/stable-diffusion-webui/config.json
       - <YOUR_DIRECTORY_TO_webui-user.sh>:/home/user/stable-diffusion-webui/webui-user.sh
+      # SET FOR DEBUG PURPOSE
+      # - <YOUR_DIRECTORY_TO_entrypoint-debug.sh>:/usr/local/bin/entrypoint.sh
     ports:
       - <YOUR_PREFERRED_PORT>:7860
     privileged: true
