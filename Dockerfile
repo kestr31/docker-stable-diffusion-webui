@@ -26,20 +26,21 @@ ENV \
     LANG=C.UTF-8 \
     LC_ALL=C.UTF-8
 
-COPY deps/aptdeps.txt /tmp/aptdeps.txt
+COPY deps/aptDeps.txt /tmp/aptDeps.txt
 
 # INSTALL APT DEPENDENCIES USING CACHE OF stage_apt
 RUN \
     --mount=type=cache,target=/var/cache/apt,from=stage_apt,source=/var/cache/apt \
     --mount=type=cache,target=/var/lib/apt,from=stage_apt,source=/var/lib/apt \
     --mount=type=cache,target=/etc/apt/sources.list.d,from=stage_apt,source=/etc/apt/sources.list.d \
-	apt-get install --no-install-recommends -y $(cat /tmp/aptdeps.txt) \
+	apt-get install --no-install-recommends -y $(cat /tmp/aptDeps.txt) \
     && rm -rf /tmp/*
 
 # ADD NON-ROOT USER user FOR RUNNING THE WEBUI
 RUN \
     groupadd user \
-    && useradd -ms /bin/bash user -g user
+    && useradd -ms /bin/bash user -g user \
+    && echo "user ALL=NOPASSWD: ALL" >> /etc/sudoers
 
 
 # STAGE FOR BUILDING APPLICATION CONTAINER
@@ -58,51 +59,59 @@ ENV \
     TORCH_CUDA_ARCH_LIST="6.0;6.1;6.2;7.0;7.2;7.5;8.0;8.6" \
     XFORMERS_DISABLE_FLASH_ATTN=1
 
-# COPY FILES REQUIRED FOR THE SETUP
-COPY --chown=user:user deps/pydeps.txt /home/user/tmp/pydeps.txt
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-
+# SWITCH TO THE GENERATED USER
 WORKDIR /home/user
+USER user
 
-# SETUP STABLE-DIFFUSION-WEBUI
-RUN \
+# CLONE AND PREPARE FOR THE SETUP OF SD-WEBUI
+RUN \ 
     git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git \
-    # SET TO COMMIT ID 64da5c46ef0d68b9048747c2e0d46ce3495f9f29
-    && git -C /home/user/stable-diffusion-webui reset --hard 64da5c \
-    && mkdir /home/user/stable-diffusion-webui/styles \
-    # INSTALL AUTO COMPLETION JAVASCRIPT
-    && curl -o /home/user/stable-diffusion-webui/javascript/auto_completion.js \
-        https://greasyfork.org/scripts/452929-webui-%ED%83%9C%EA%B7%B8-%EC%9E%90%EB%8F%99%EC%99%84%EC%84%B1/code/WebUI%20%ED%83%9C%EA%B7%B8%20%EC%9E%90%EB%8F%99%EC%99%84%EC%84%B1.user.js \
-    && python3 -m venv /home/user/stable-diffusion-webui/venv \
-    && source /home/user/stable-diffusion-webui/venv/bin/activate \
-    && python3 -m pip install $(cat /home/user/tmp/pydeps.txt) \
+    # CHECKOUT TO COMMIT a9eab236d7e8afa4d6205127904a385b2c43bb24
+    && git -C /home/user/stable-diffusion-webui reset --hard a9eab2 \
+    && sed -i \
+        "s/#export COMMANDLINE_ARGS=\"\"/export COMMANDLINE_ARGS=\"\
+            --listen \
+            --xformers \
+            --skip-torch-cuda-test \
+            --styles-file styles\/styles.csv \
+            --no-download-sd-model \
+            --enable-insecure-extension-access\"/g" \
+        /home/user/stable-diffusion-webui/webui-user.sh \
     && chmod +x /home/user/stable-diffusion-webui/webui-user.sh \
-    && rm -rf /home/user/tmp
+    && mkdir /home/user/stable-diffusion-webui/styles
 
-# SETUP XFORMERS
+# SETUP STABLE-DIFFUSION-WEBUI WITH THE SCRIPT PROVIDED
+COPY --chmod=777 --chown=user:user \
+    scripts/setup.sh /tmp/setup.sh
+
 RUN \
-    mkdir /home/user/stable-diffusion-webui/repositories \
-    && git clone https://github.com/facebookresearch/xformers.git \
-        /home/user/stable-diffusion-webui/repositories/xformers \
-    # SET TO COMMIT ID 814314dfc207836839c57613c0354fef6e07fa2d
-    && git -C /home/user/stable-diffusion-webui/repositories/xformers \
-        reset --hard 814314d \
-    # UPDATE SUBMODULES REQUIRED FOR XFORMERS
-    && git -C /home/user/stable-diffusion-webui/repositories/xformers \
-        submodule update --init --recursive \
+    wget -O \
+        /home/user/stable-diffusion-webui/models/Stable-diffusion/v1-5-pruned-emaonly.safetensors \
+        https://huggingface.co/runwayml/stable-diffusion-v1-5/resolve/main/v1-5-pruned-emaonly.safetensors \
+    && COMMANDLINE_ARGS="--skip-torch-cuda-test --no-download-sd-model" \
+        /home/user/stable-diffusion-webui/webui.sh \
+    & /tmp/setup.sh \
+    && rm -rf /tmp/*
+
+# INSTALL PYTHON DEPENDENCIES THAT ARE NOT INSTALLED BY THE SCRIPT
+COPY --chown=user:user \
+    deps/pyDeps.txt /tmp/pyDeps.txt
+
+RUN \
+    python3 -m venv /home/user/stable-diffusion-webui/venv \
     && source /home/user/stable-diffusion-webui/venv/bin/activate \
-    && pip install -r /home/user/stable-diffusion-webui/repositories/xformers/requirements.txt \
-    && pip install -e /home/user/stable-diffusion-webui/repositories/xformers
+    && python3 -m pip install $(cat /tmp/pyDeps.txt) \
+    && rm -rf /tmp/*
 
-# COPY INITIAL SETTINGS FILES
-# THIS KINDA WORK AS A PLACEHOLDER FOR DOCKER VOLUME MOUNT
-COPY settings/run.sh /home/user/stable-diffusion-webui/run.sh
-COPY settings/config.json /home/user/stable-diffusion-webui/config.json
-COPY settings/ui-config.json /home/user/ui-config.json.bak
-
-# CHENGE OWNERSHIP OF ALL FILES AS user:user
+# INCLUDE AUTO COMPLETION JAVASCRIPT
 RUN \
-    chown -R user:user /home/user
+    curl -o /home/user/stable-diffusion-webui/javascript/auto_completion.js \
+        https://greasyfork.org/scripts/452929-webui-%ED%83%9C%EA%B7%B8-%EC%9E%90%EB%8F%99%EC%99%84%EC%84%B1/code/WebUI%20%ED%83%9C%EA%B7%B8%20%EC%9E%90%EB%8F%99%EC%99%84%EC%84%B1.user.js
+
+# COPY entrypoint.sh
+COPY --chmod=775 scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
+
+WORKDIR /home/user/stable-diffusion-webui
 
 # PORT AND ENTRYPOINT, USER SETTINGS
 EXPOSE 7860
@@ -110,45 +119,11 @@ ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
 
 # DOCKER IAMGE LABELING
 LABEL title="Stable-Diffusion-Webui-Docker"
-LABEL version="1.1.0"
+LABEL version="1.2.0"
 
 # ---------- BUILD COMMAND ----------
 # DOCKER_BUILDKIT=1 docker build --no-cache \
 # --build-arg BASEIMAGE=nvidia/cuda \
-# --build-arg BASETAG=11.7.1-devel-ubuntu22.04 \
-# -t kestr3l/stable-diffusion-webui:1.1.2 \
+# --build-arg BASETAG=11.7.1-cudnn8-devel-ubuntu22.04 \
+# -t kestr3l/stable-diffusion-webui:1.2.0 \
 # -f Dockerfile .
-
-# ----------- RUN COMMAND -----------
-# docker run -it --rm \
-#     --name stable-diffusion-webui \
-#     -e NVIDIA_DISABLE_REQUIRE=1 \
-#     -e NVIDIA_DRIVER_CAPABILITIES=all \
-#     -e UID=$(id -u) \
-#     -e GID=$(id -g) \
-#     -v <YOUR_DIRECTORY_TO_MODELS>:/home/user/stable-diffusion-webui/models/Stable-diffusion
-#     -v <YOUR_DIRECTORY_TO_OUTPUT>:/home/user/stable-diffusion-webui/outputs
-#     -v <YOUR_DIRECTORY_TO_STYLES>:/home/user/stable-diffusion-webui/styles
-#     -v <YOUR_DIRECTORY_TO_EXTENSIONS>:/home/user/stable-diffusion-webui/models/extensions
-#     -v <YOUR_DIRECTORY_TO_VAE>:/home/user/stable-diffusion-webui/models/VAE
-#     -v <YOUR_DIRECTORY_TO_config.json>:/home/user/stable-diffusion-webui/config.json
-#     -v <YOUR_DIRECTORY_TO_ui-config.json>:/home/user/ui-config.json.bak
-#     -v <YOUR_DIRECTORY_TO_webui-user.sh>:/home/user/stable-diffusion-webui/webui-user.sh
-#     -p <YOUR_PREFFERED_PORT>:7860 \
-#     --gpus all \
-#     --privileged \
-#     kestr3l/stable-diffusion-webui:1.1.2
-
-# ---------- DEBUG COMMAND ----------
-# docker run -it --rm \
-#     --name stable-diffusion-webui \
-#     -e NVIDIA_DISABLE_REQUIRE=1 \
-#     -e NVIDIA_DRIVER_CAPABILITIES=all \
-#     -e UID=$(id -u) \
-#     -e GID=$(id -g) \
-#     ....
-#     -v <YOUR_DIRECTORY_TO_entrypoint-debug.sh>:/usr/local/bin/entrypoint.sh
-#     -p <YOUR_PREFFERED_PORT>:7860 \
-#     --gpus all \
-#     --privileged \
-#     kestr3l/stable-diffusion-webui:1.1.2
