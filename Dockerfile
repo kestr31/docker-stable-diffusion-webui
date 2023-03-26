@@ -67,8 +67,8 @@ WORKDIR /home/user
 # SETUP STABLE-DIFFUSION-WEBUI
 RUN \
     git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git \
-    # SET TO COMMIT ID dac59b9b073f86508d3ec787ff731af2e101fbcc
-    && git -C /home/user/stable-diffusion-webui reset --hard dac59b9 \
+    # SET TO COMMIT ID 64da5c46ef0d68b9048747c2e0d46ce3495f9f29
+    && git -C /home/user/stable-diffusion-webui reset --hard 64da5c \
     && mkdir /home/user/stable-diffusion-webui/styles \
     # INSTALL AUTO COMPLETION JAVASCRIPT
     && curl -o /home/user/stable-diffusion-webui/javascript/auto_completion.js \
@@ -116,7 +116,7 @@ LABEL version="1.1.0"
 # DOCKER_BUILDKIT=1 docker build --no-cache \
 # --build-arg BASEIMAGE=nvidia/cuda \
 # --build-arg BASETAG=11.7.1-devel-ubuntu22.04 \
-# -t kestr3l/stable-diffusion-webui:1.1.0 \
+# -t kestr3l/stable-diffusion-webui:1.1.2 \
 # -f Dockerfile .
 
 # ----------- RUN COMMAND -----------
@@ -137,7 +137,7 @@ LABEL version="1.1.0"
 #     -p <YOUR_PREFFERED_PORT>:7860 \
 #     --gpus all \
 #     --privileged \
-#     kestr3l/stable-diffusion-webui:1.1.0
+#     kestr3l/stable-diffusion-webui:1.1.2
 
 # ---------- DEBUG COMMAND ----------
 # docker run -it --rm \
@@ -151,4 +151,4 @@ LABEL version="1.1.0"
 #     -p <YOUR_PREFFERED_PORT>:7860 \
 #     --gpus all \
 #     --privileged \
-#     kestr3l/stable-diffusion-webui:1.1.0
+#     kestr3l/stable-diffusion-webui:1.1.2
