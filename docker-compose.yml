@@ -1,14 +1,17 @@
 version: "3"
 services:
   stable-diffusion:
-    image: kestr3l/stable-diffusion-webui:1.1.0
+    image: kestr3l/stable-diffusion-webui:1.2.0
     restart: unless-stopped
     container_name: stable-diffusion-webui
+    secrets:
+      - gradio_auth
     environment:
       - NVIDIA_DISABLE_REQUIRE=1
       - NVIDIA_DRIVER_CAPABILITIES=all
       - UID=<YOUR_UID>
       - GID=<YOUR_GID>
+      - DIR_GRADIO_AUTH=/run/secrets/gradio_auth
       # Get UID and GID using following commands:
       #   For UID: echo $(id -u)
       #   For GID: echo $(id -g)
@@ -19,7 +22,6 @@ services:
       - <YOUR_DIRECTORY_TO_EXTENSIONS>:/home/user/stable-diffusion-webui/models/extensions
       - <YOUR_DIRECTORY_TO_VAE>:/home/user/stable-diffusion-webui/models/VAE
       - <YOUR_DIRECTORY_TO_config.json>:/home/user/stable-diffusion-webui/config.json
-      - <YOUR_DIRECTORY_TO_ui-config.json>:/home/user/ui-config.json.bak
       - <YOUR_DIRECTORY_TO_webui-user.sh>:/home/user/stable-diffusion-webui/webui-user.sh
     ports:
       - <YOUR_PREFERRED_PORT>:7860
@@ -29,3 +31,6 @@ services:
         reservations:
           devices:
             - capabilities: [gpu]
+secrets:
+  gradio_auth:
+    file: ./secrets/gradio_auth.txt
