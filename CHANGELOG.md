@@ -18,7 +18,7 @@
 - Resolved file permission issues due to different UID & GIDs
   - Now, any volume or file can be mapped to host volume
 - Updated [prompt auto-completion javascript](https://greasyfork.org/ko/scripts/452929-webui-%ED%83%9C%EA%B7%B8-%EC%9E%90%EB%8F%99%EC%99%84%EC%84%B1) credited by [shounksu](https://greasyfork.org/ko/users/815641-shounksu)
-- [Docker Hub](https://hub.docker.com/layers/kestr3l/stable-diffusion-webui/1.0.1/images/
+- [Docker Hub](https://hub.docker.com/layers/kestr3l/stable-diffusion-webui/1.0.1/images/)
 
 # 1.1.0 (2023-01-18)
 
@@ -39,3 +39,19 @@
 - Removed redundant blank on env. var. settings on `docker-compose.yml` which might cause an error
 - Fixed mismatching directory on `run.sh` since `styles.csv` was moved to `styles/styles.csv`
 - [DockerHub](https://hub.docker.com/layers/kestr3l/stable-diffusion-webui/1.1.1/images/sha256-37617664832c4a495765faae143688e74ea45d33240ab195cac7bb345ffbefed?context=explore)
+
+# 1.2.0 (2023-03-27)
+
+- `nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04`.
+- Update to Stable-Diffusion-WebUI commit `a9eab236d7e8afa4d6205127904a385b2c43bb24`.
+- Total rework on Dockerfile structure.
+  - Mainly to make update to Stable-Diffusion-WebUI's newer commits much easier.
+  - Removal of xformers build part since it is provided in pip repository.
+- Reworked dependencies. Now they depend more on `requirements.txt` of Stable-Diffusion-WebUI.
+- Reworked permission of `user`.
+  - Installation process is now all done by `user` in order to shorten docker image build time.
+  - `user` can now use sudo command inside a container without authentication.
+- Reworked initialization process of Stable-Diffusion-WebUI. Now, only `entrypoint.sh` takes part.
+- Modified `docker-compose.yml` to set gradeio authentication using docker secret.
+- Modified directory structure of the repository to be more 'ordered'
+- [Docker Hub](https://hub.docker.com/layers/kestr3l/stable-diffusion-webui/1.2.0/images/)

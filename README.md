@@ -31,6 +31,8 @@ DOCKER_BUILDKIT=1 docker build --no-cache \
 
 ### 1.2 Running `docker-stable-diffusion-webui` Container
 
+> I stronly recommend to run this container by `docker-compose` due to complexity of settings. Also, suggested `docker run` commands are outdated.
+
 - Basic docker CLI command of running a container is suggested as below
 - You need to prepare a model on your own since I can't provide it
 - Based on your need, set your own port to connect
