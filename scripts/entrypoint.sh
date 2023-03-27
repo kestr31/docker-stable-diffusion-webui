@@ -12,27 +12,30 @@ if [ "$#" = 0 ]; then
 fi
 
 if [ ${UID} != 0 ]; then
-        sudo usermod -u ${UID} user -o 2>/dev/null && {
-                sudo groupmod -g ${GID} user 2>/dev/null ||
-                sudo usermod -a -G ${GID} user
+        usermod -u ${UID} user -o 2>/dev/null && {
+                groupmod -g ${GID} user 2>/dev/null ||
+                usermod -a -G ${GID} user
         }
 fi
 
 echo "CHANGING OWNERSHIP OF SOME FILES..."
 
-sudo chown -R user:user /home/user/stable-diffusion-webui/extensions
-sudo chown -R user:user /home/user/stable-diffusion-webui/outputs
-sudo chown -R user:user /home/user/stable-diffusion-webui/styles
-sudo chown -R user:user /home/user/stable-diffusion-webui/models
+chown -R user:user /home/user/stable-diffusion-webui/extensions
+chown -R user:user /home/user/stable-diffusion-webui/outputs
+chown -R user:user /home/user/stable-diffusion-webui/styles
+chown -R user:user /home/user/stable-diffusion-webui/models
 
-sudo chown -R user:user /home/user/stable-diffusion-webui/ui-config.json
+if [ -f "/home/user/stable-diffusion-webui/ui-config.json" ];
+then
+        chown -R user:user /home/user/stable-diffusion-webui/ui-config.json
+fi
 
 if [ -f "/home/user/stable-diffusion-webui/config.json" ];
 then
-        sudo chown -R user:user /home/user/stable-diffusion-webui/config.json
+        chown -R user:user /home/user/stable-diffusion-webui/config.json
 fi
 
 echo "RECONFIGURED!"
 
 source /home/user/stable-diffusion-webui/webui-user.sh
-/home/user/stable-diffusion-webui/webui.sh
+su -c "/home/user/stable-diffusion-webui/webui.sh" user

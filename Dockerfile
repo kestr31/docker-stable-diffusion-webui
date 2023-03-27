@@ -66,8 +66,8 @@ USER user
 # CLONE AND PREPARE FOR THE SETUP OF SD-WEBUI
 RUN \ 
     git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git \
-    # CHECKOUT TO COMMIT a9eab236d7e8afa4d6205127904a385b2c43bb24
-    && git -C /home/user/stable-diffusion-webui reset --hard a9eab2 \
+    # CHECKOUT TO COMMIT 955df7751eef11bb7697e2d77f6b8a6226b21e13
+    && git -C /home/user/stable-diffusion-webui reset --hard 955df7 \
     && sed -i \
         "s/#export COMMANDLINE_ARGS=\"\"/export COMMANDLINE_ARGS=\"\
             --listen \
@@ -83,18 +83,12 @@ RUN \
     mkdir /home/user/stable-diffusion-webui/outputs \
     && mkdir /home/user/stable-diffusion-webui/styles
 
-# SETUP STABLE-DIFFUSION-WEBUI WITH THE SCRIPT PROVIDED
-COPY --chmod=777 --chown=user:user \
-    scripts/setup.sh /tmp/setup.sh
-
 RUN \
     wget -O \
         /home/user/stable-diffusion-webui/models/Stable-diffusion/v1-5-pruned-emaonly.safetensors \
         https://huggingface.co/runwayml/stable-diffusion-v1-5/resolve/main/v1-5-pruned-emaonly.safetensors \
-    && COMMANDLINE_ARGS="--skip-torch-cuda-test --no-download-sd-model" \
-        /home/user/stable-diffusion-webui/webui.sh \
-    & /tmp/setup.sh \
-    && rm -rf /tmp/*
+    && COMMANDLINE_ARGS="--skip-torch-cuda-test --no-download-sd-model --exit" \
+        /home/user/stable-diffusion-webui/webui.sh
 
 # INSTALL PYTHON DEPENDENCIES THAT ARE NOT INSTALLED BY THE SCRIPT
 COPY --chown=user:user \
@@ -115,6 +109,7 @@ RUN \
 COPY --chmod=775 scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 WORKDIR /home/user/stable-diffusion-webui
+USER root
 
 # PORT AND ENTRYPOINT, USER SETTINGS
 EXPOSE 7860
@@ -122,11 +117,11 @@ ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
 
 # DOCKER IAMGE LABELING
 LABEL title="Stable-Diffusion-Webui-Docker"
-LABEL version="1.2.1"
+LABEL version="1.2.2"
 
 # ---------- BUILD COMMAND ----------
 # DOCKER_BUILDKIT=1 docker build --no-cache \
 # --build-arg BASEIMAGE=nvidia/cuda \
 # --build-arg BASETAG=11.7.1-cudnn8-devel-ubuntu22.04 \
-# -t kestr3l/stable-diffusion-webui:1.2.1 \
+# -t kestr3l/stable-diffusion-webui:1.2.2 \
 # -f Dockerfile .
