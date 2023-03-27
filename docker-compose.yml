@@ -16,6 +16,7 @@ services:
       #   For UID: echo $(id -u)
       #   For GID: echo $(id -g)
     volumes:
+      # SET FOR STABLE-DIFFUSION-WEBUI SETTINGS
       - <YOUR_DIRECTORY_TO_MODELS>:/home/user/stable-diffusion-webui/models/Stable-diffusion
       - <YOUR_DIRECTORY_TO_OUTPUT>:/home/user/stable-diffusion-webui/outputs
       - <YOUR_DIRECTORY_TO_STYLES>:/home/user/stable-diffusion-webui/styles
@@ -23,10 +24,18 @@ services:
       - <YOUR_DIRECTORY_TO_VAE>:/home/user/stable-diffusion-webui/models/VAE
       - <YOUR_DIRECTORY_TO_config.json>:/home/user/stable-diffusion-webui/config.json
       - <YOUR_DIRECTORY_TO_webui-user.sh>:/home/user/stable-diffusion-webui/webui-user.sh
+      # SET FOR LoRA TRAINING USING KOHYA_SS GUI
+      - <YOUR_DIRECTORY_TO_LoRA_TRAINING_IAMGES>:/home/user/kohya_ss/images
+      - <YOUR_DIRECTORY_TO_LoRA_TRAINING_LOGS>:/home/user/kohya_ss/logs
+      - <YOUR_DIRECTORY_TO_LoRA_TRAINING_OUTPUT>:/home/user/kohya_ss/models
+      - <YOUR_DIRECTORY_TO_LoRA_TRAINING_REGULARIZATIONS>:/home/user/kohya_ss/regularizations
       # SET FOR DEBUG PURPOSE
       # - <YOUR_DIRECTORY_TO_entrypoint-debug.sh>:/usr/local/bin/entrypoint.sh
     ports:
+      # STABLE-DIFFUSION-WEBUI
       - <YOUR_PREFERRED_PORT>:7860
+      # Kohya_SS GUI
+      - <YOUR_PREFERRED_PORT>:7861
     privileged: true
     deploy:
       resources:

@@ -35,7 +35,19 @@ then
         chown -R user:user /home/user/stable-diffusion-webui/config.json
 fi
 
+chown -R user:user /home/user/kohya_ss/images
+chown -R user:user /home/user/kohya_ss/logs
+chown -R user:user /home/user/kohya_ss/models
+chown -R user:user /home/user/kohya_ss/regularizations
+
 echo "RECONFIGURED!"
 
 source /home/user/stable-diffusion-webui/webui-user.sh
-su -c "/home/user/stable-diffusion-webui/webui.sh" user
+su -c "/home/user/stable-diffusion-webui/webui.sh" user &
+su -c "cd /home/user/kohya_ss \
+        && source /home/user/kohya_ss/venv/bin/activate \
+        && /home/user/kohya_ss/gui.sh \
+                --username $(sed 's/:.*//' ${DIR_GRADIO_AUTH}) \
+                --password $(sed 's/.*://' ${DIR_GRADIO_AUTH}) \
+                --listen 0.0.0.0 \
+                --server_port 7861" user

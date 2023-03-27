@@ -105,6 +105,31 @@ RUN \
     curl -o /home/user/stable-diffusion-webui/javascript/auto_completion.js \
         https://greasyfork.org/scripts/452929-webui-%ED%83%9C%EA%B7%B8-%EC%9E%90%EB%8F%99%EC%99%84%EC%84%B1/code/WebUI%20%ED%83%9C%EA%B7%B8%20%EC%9E%90%EB%8F%99%EC%99%84%EC%84%B1.user.js
 
+RUN \
+    git clone https://github.com/bmaltais/kohya_ss.git \
+    # CHECKOUT TO COMMIT acf7d4785f79d858fb1660ae28456d2865f97af6
+    && git -C /home/user/kohya_ss reset --hard acf7d4 \
+    && sed -i "/python3-tk/d" /home/user/kohya_ss/ubuntu_setup.sh \
+    && sed -i "/accelerate config/d" /home/user/kohya_ss/ubuntu_setup.sh
+
+RUN \
+    mkdir /home/user/kohya_ss/images \
+    && mkdir /home/user/kohya_ss/logs \
+    && mkdir /home/user/kohya_ss/models \
+    && mkdir /home/user/kohya_ss/regularizations
+
+COPY \
+    --chmod=644 \
+    --chown=user:user \
+    settings/default_config.yaml /home/user/.cache/huggingface/accelerate/default_config.yaml
+
+WORKDIR /home/user/kohya_ss
+
+RUN \
+    python3 -m venv /home/user/kohya_ss/venv \
+    && source /home/user/kohya_ss/venv/bin/activate \
+    && /home/user/kohya_ss/ubuntu_setup.sh
+
 # COPY entrypoint.sh
 COPY --chmod=775 scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
 
@@ -112,16 +137,16 @@ WORKDIR /home/user/stable-diffusion-webui
 USER root
 
 # PORT AND ENTRYPOINT, USER SETTINGS
-EXPOSE 7860
+EXPOSE 7860 7861
 ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
 
 # DOCKER IAMGE LABELING
 LABEL title="Stable-Diffusion-Webui-Docker"
-LABEL version="1.2.2"
+LABEL version="1.2.2-LoRA"
 
 # ---------- BUILD COMMAND ----------
 # DOCKER_BUILDKIT=1 docker build --no-cache \
 # --build-arg BASEIMAGE=nvidia/cuda \
 # --build-arg BASETAG=11.7.1-cudnn8-devel-ubuntu22.04 \
-# -t kestr3l/stable-diffusion-webui:1.2.2 \
+# -t kestr3l/stable-diffusion-webui:1.2.2-lora \
 # -f Dockerfile .
