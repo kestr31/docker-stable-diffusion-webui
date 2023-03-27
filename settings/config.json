@@ -51,7 +51,7 @@
     "dataset_filename_join_string": " ",
     "training_image_repeats_per_epoch": 1,
     "training_write_csv_every": 500.0,
-    "sd_model_checkpoint": "LonganMix.ckpt",
+    "sd_model_checkpoint": "AbyssOrangeMix2_nsfw.safetensors",
     "sd_checkpoint_cache": 0,
     "sd_hypernetwork": "None",
     "sd_hypernetwork_strength": 0.491,
