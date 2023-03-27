@@ -55,3 +55,11 @@
 - Modified `docker-compose.yml` to set gradeio authentication using docker secret.
 - Modified directory structure of the repository to be more 'ordered'
 - [Docker Hub](https://hub.docker.com/layers/kestr3l/stable-diffusion-webui/1.2.0/images/)
+
+# 1.2.1 (2023-03-27)
+- `nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04`.
+- Staying at Stable-Diffusion-WebUI commit `a9eab236d7e8afa4d6205127904a385b2c43bb24`.
+- Fixed write permission issues on following directories caused by mismatching PID/GID when volume-mappedL
+  - `/home/user/stable-diffusion-webui/extensions`
+  - `/home/user/stable-diffusion-webui/outputs`
+  - `/home/user/stable-diffusion-webui/models`
