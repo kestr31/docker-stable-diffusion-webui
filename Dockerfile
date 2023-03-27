@@ -77,7 +77,10 @@ RUN \
             --no-download-sd-model \
             --enable-insecure-extension-access\"/g" \
         /home/user/stable-diffusion-webui/webui-user.sh \
-    && chmod +x /home/user/stable-diffusion-webui/webui-user.sh \
+    && chmod +x /home/user/stable-diffusion-webui/webui-user.sh
+
+RUN \
+    mkdir /home/user/stable-diffusion-webui/outputs \
     && mkdir /home/user/stable-diffusion-webui/styles
 
 # SETUP STABLE-DIFFUSION-WEBUI WITH THE SCRIPT PROVIDED
@@ -119,11 +122,11 @@ ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
 
 # DOCKER IAMGE LABELING
 LABEL title="Stable-Diffusion-Webui-Docker"
-LABEL version="1.2.0"
+LABEL version="1.2.1"
 
 # ---------- BUILD COMMAND ----------
 # DOCKER_BUILDKIT=1 docker build --no-cache \
 # --build-arg BASEIMAGE=nvidia/cuda \
 # --build-arg BASETAG=11.7.1-cudnn8-devel-ubuntu22.04 \
-# -t kestr3l/stable-diffusion-webui:1.2.0 \
+# -t kestr3l/stable-diffusion-webui:1.2.1 \
 # -f Dockerfile .

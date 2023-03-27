@@ -20,7 +20,11 @@ fi
 
 echo "CHANGING OWNERSHIP OF SOME FILES..."
 
+sudo chown -R user:user /home/user/stable-diffusion-webui/extensions
+sudo chown -R user:user /home/user/stable-diffusion-webui/outputs
 sudo chown -R user:user /home/user/stable-diffusion-webui/styles
+sudo chown -R user:user /home/user/stable-diffusion-webui/models
+
 sudo chown -R user:user /home/user/stable-diffusion-webui/ui-config.json
 
 if [ -f "/home/user/stable-diffusion-webui/config.json" ];
