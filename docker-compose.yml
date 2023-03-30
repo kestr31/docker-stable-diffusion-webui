@@ -1,7 +1,7 @@
 version: "3"
 services:
   stable-diffusion:
-    image: kestr3l/stable-diffusion-webui:1.2.0
+    image: kestr3l/stable-diffusion-webui:1.2.2
     restart: unless-stopped
     container_name: stable-diffusion-webui
     secrets:
@@ -24,6 +24,35 @@ services:
       - <YOUR_DIRECTORY_TO_VAE>:/home/user/stable-diffusion-webui/models/VAE
       - <YOUR_DIRECTORY_TO_config.json>:/home/user/stable-diffusion-webui/config.json
       - <YOUR_DIRECTORY_TO_webui-user.sh>:/home/user/stable-diffusion-webui/webui-user.sh
+      # SET FOR DEBUG PURPOSE
+      # - <YOUR_DIRECTORY_TO_entrypoint-debug.sh>:/usr/local/bin/entrypoint.sh
+    networks:
+      - stable-diffusion-webui-net
+    ports:
+      # STABLE-DIFFUSION-WEBUI
+      - <YOUR_PREFERRED_PORT>:7860
+    privileged: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+  kohys-ss-gui:
+    image: kestr3l/kohya-ss-gui:1.0.0-acf7d4
+    restart: unless-stopped
+    container_name: skohya-ss-gui
+    secrets:
+      - gradio_auth
+    environment:
+      - NVIDIA_DISABLE_REQUIRE=1
+      - NVIDIA_DRIVER_CAPABILITIES=all
+      - UID=<YOUR_UID>
+      - GID=<YOUR_GID>
+      - DIR_GRADIO_AUTH=/run/secrets/gradio_auth
+      # Get UID and GID using following commands:
+      #   For UID: echo $(id -u)
+      #   For GID: echo $(id -g)
+    volumes:
       # SET FOR LoRA TRAINING USING KOHYA_SS GUI
       - <YOUR_DIRECTORY_TO_LoRA_TRAINING_IAMGES>:/home/user/kohya_ss/images
       - <YOUR_DIRECTORY_TO_LoRA_TRAINING_LOGS>:/home/user/kohya_ss/logs
@@ -31,9 +60,9 @@ services:
       - <YOUR_DIRECTORY_TO_LoRA_TRAINING_REGULARIZATIONS>:/home/user/kohya_ss/regularizations
       # SET FOR DEBUG PURPOSE
       # - <YOUR_DIRECTORY_TO_entrypoint-debug.sh>:/usr/local/bin/entrypoint.sh
+    networks:
+      - stable-diffusion-webui-net
     ports:
-      # STABLE-DIFFUSION-WEBUI
-      - <YOUR_PREFERRED_PORT>:7860
       # Kohya_SS GUI
       - <YOUR_PREFERRED_PORT>:7861
     privileged: true
@@ -45,3 +74,6 @@ services:
 secrets:
   gradio_auth:
     file: ./secrets/gradio_auth.txt
+networks:
+  stable-diffusion-webui-net:
+    name: stable-diffusion-webui-net
