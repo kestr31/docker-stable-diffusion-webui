@@ -33,4 +33,4 @@ services:
             - capabilities: [gpu]
 secrets:
   gradio_auth:
-    file: ./secrets/gradio_auth.txt
+    file: ${DIR_GRADIO_AUTH}
