@@ -15,7 +15,9 @@ export COMMANDLINE_ARGS="--listen \
     --xformers --skip-torch-cuda-test \
     --gradio-auth-path ${DIR_GRADIO_AUTH} \
     --styles-file styles/styles.csv \
-    --no-download-sd-model"
+    --no-download-sd-model \
+    --ui-config-file /home/user/stable-diffusion-webui/ui-config-user.json \
+    --ui-settings-file /home/user/stable-diffusion-webui/config-user.json"
 
 # python3 executable
 #python_cmd="python3"
@@ -41,11 +43,13 @@ export COMMANDLINE_ARGS="--listen \
 
 # Fixed git commits
 #export STABLE_DIFFUSION_COMMIT_HASH=""
-#export TAMING_TRANSFORMERS_COMMIT_HASH=""
 #export CODEFORMER_COMMIT_HASH=""
 #export BLIP_COMMIT_HASH=""
 
 # Uncomment to enable accelerated launch
 #export ACCELERATE="True"
+
+# Uncomment to disable TCMalloc
+#export NO_TCMALLOC="True"
 
 ###########################################
