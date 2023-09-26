@@ -26,7 +26,7 @@ ENV \
     LANG=C.UTF-8 \
     LC_ALL=C.UTF-8
 
-COPY deps/aptDeps.txt /tmp/aptDeps.txt
+COPY aptDeps.txt /tmp/aptDeps.txt
 
 # INSTALL APT DEPENDENCIES USING CACHE OF stage_apt
 RUN \
@@ -56,8 +56,7 @@ ENV \
     LD_LIBRARY_PATH=/usr/local/cuda-11.7/lib64:$LD_LIBRARY_PATH \
     NVCC_FLAGS="--use_fast_math -DXFORMERS_MEM_EFF_ATTENTION_DISABLE_BACKWARD"\
     PATH=/usr/local/cuda-11.7/bin:$PATH \
-    TORCH_CUDA_ARCH_LIST="6.0;6.1;6.2;7.0;7.2;7.5;8.0;8.6" \
-    XFORMERS_DISABLE_FLASH_ATTN=1
+    TORCH_CUDA_ARCH_LIST="6.0;6.1;6.2;7.0;7.2;7.5;8.0;8.6"
 
 # SWITCH TO THE GENERATED USER
 WORKDIR /home/user
@@ -65,9 +64,7 @@ USER user
 
 # CLONE AND PREPARE FOR THE SETUP OF SD-WEBUI
 RUN \ 
-    git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git \
-    # CHECKOUT TO COMMIT 955df7751eef11bb7697e2d77f6b8a6226b21e13
-    && git -C /home/user/stable-diffusion-webui reset --hard 955df7 \
+    git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git -b v1.6.0 \
     && sed -i \
         "s/#export COMMANDLINE_ARGS=\"\"/export COMMANDLINE_ARGS=\"\
             --listen \
@@ -87,18 +84,7 @@ RUN \
     wget -O \
         /home/user/stable-diffusion-webui/models/Stable-diffusion/v1-5-pruned-emaonly.safetensors \
         https://huggingface.co/runwayml/stable-diffusion-v1-5/resolve/main/v1-5-pruned-emaonly.safetensors \
-    && COMMANDLINE_ARGS="--skip-torch-cuda-test --no-download-sd-model --exit" \
-        /home/user/stable-diffusion-webui/webui.sh
-
-# INSTALL PYTHON DEPENDENCIES THAT ARE NOT INSTALLED BY THE SCRIPT
-COPY --chown=user:user \
-    deps/pyDeps.txt /tmp/pyDeps.txt
-
-RUN \
-    python3 -m venv /home/user/stable-diffusion-webui/venv \
-    && source /home/user/stable-diffusion-webui/venv/bin/activate \
-    && python3 -m pip install $(cat /tmp/pyDeps.txt) \
-    && rm -rf /tmp/*
+    && /home/user/stable-diffusion-webui/webui.sh --xformers --skip-torch-cuda-test --no-download-sd-model --exit
 
 # INCLUDE AUTO COMPLETION JAVASCRIPT
 RUN \
@@ -117,11 +103,11 @@ ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
 
 # DOCKER IAMGE LABELING
 LABEL title="Stable-Diffusion-Webui-Docker"
-LABEL version="1.2.2"
+LABEL version="1.6.0"
 
 # ---------- BUILD COMMAND ----------
 # DOCKER_BUILDKIT=1 docker build --no-cache \
 # --build-arg BASEIMAGE=nvidia/cuda \
 # --build-arg BASETAG=11.7.1-cudnn8-devel-ubuntu22.04 \
-# -t kestr3l/stable-diffusion-webui:1.2.2 \
+# -t kestr3l/stable-diffusion-webui:1.6.0 \
 # -f Dockerfile .
