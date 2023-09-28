@@ -14,7 +14,7 @@ services:
       - DIR_GRADIO_AUTH=/run/secrets/gradio_auth
       - DEBUG_MODE=${DEBUG_MODE}
     volumes:
-      # - ${DIR_MODELS}:/home/user/stable-diffusion-webui/models
+      - ${DIR_MODELS}:/home/user/stable-diffusion-webui/models
       - ${DIR_OUT}:/home/user/stable-diffusion-webui/outputs
       - ${DIR_STYLES}:/home/user/stable-diffusion-webui/styles
       - ${DIR_EXTENSIONS}:/home/user/stable-diffusion-webui/models/extensions
