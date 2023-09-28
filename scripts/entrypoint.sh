@@ -62,7 +62,7 @@ else
         echo -e "[INFO]\t EMPTY ui-config-user.json or config-user.json"
         echo -e "[INFO]\t THESE FILES WILL BE FILLED UP WITH DEFAULT SETTINGS FOR ONLY ONCE."
 
-        su -c "./webui.sh --skip-torch-cuda-test" user &
+        su -c "./webui.sh --xformers --skip-torch-cuda-test" user &
 
         UI_CONFIG_DIR=$(find ${SD_WEBUI_DIR} -maxdepth 1 -type f -name 'ui-config.json')
         UI_SETTINGS_DIR=$(find ${SD_WEBUI_DIR} -maxdepth 1 -type f -name 'config.json')
