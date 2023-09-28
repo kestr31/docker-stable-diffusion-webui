@@ -1,9 +1,12 @@
 #! /bin/bash
 
-SD_DATA_DIR=home/${USER}/Documents/Stable-Diffusion-WebUI
+SD_DATA_DIR="/home/${USER}/Documents/Stable-Diffusion-WebUI"
 
-sed -i "s/<YOUR_UID>/${UID}/g" run.env
-sed -i "s/<YOUR_GID>/${GID}/g" run.env
+UID=$(id -u)
+GID=$(id -g)
+
+sed -i "s/<YOUR_UID>/${UID}/g" ./run.env
+sed -i "s/<YOUR_GID>/${GID}/g" ./run.env
 
 echo -e "[INFO]\t SD WEBUI DIRECTORY WILL BE CREATED ON:"
 echo -e "[INFO]\t\t /home/${USER}/Documents/Stable-Diffusion-WebUI"
@@ -17,6 +20,7 @@ if [ ! -d "${SD_DATA_DIR}" ]; then
     
     touch ${SD_DATA_DIR}/ui-config-user.json
     touch ${SD_DATA_DIR}/config-user.json
+    cp ./webui-user.sh ${SD_DATA_DIR}/webui-user.sh
     echo "INITIAL_PASSWORD" >> ${SD_DATA_DIR}/gradio_auth.txt
     
     echo -e "[INFO]\t DIRECTORIES CREATED."
@@ -24,6 +28,6 @@ else
     echo -e "[INFO]\t DIRECTORIES ALREADY EXISTS!"
 fi
 
-sed -i "s/<YOUR_DIRECTORY_TO_SD>/${SD_DATA_DIR}/g" run.env
+sed -i "s#<YOUR_DIRECTORY_TO_SD>#${SD_DATA_DIR}#g" ./run.env
 
 docker compose --env-file run.env up

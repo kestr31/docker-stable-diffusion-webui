@@ -13,11 +13,10 @@ services:
       - GID=${GID}
       - DIR_GRADIO_AUTH=/run/secrets/gradio_auth
     volumes:
-      - ${DIR_MODEL}:/home/user/stable-diffusion-webui/models/Stable-diffusion
+      - ${DIR_MODELS}:/home/user/stable-diffusion-webui/models
       - ${DIR_OUT}:/home/user/stable-diffusion-webui/outputs
       - ${DIR_STYLES}:/home/user/stable-diffusion-webui/styles
       - ${DIR_EXTENSIONS}:/home/user/stable-diffusion-webui/models/extensions
-      - ${DIR_VAE}:/home/user/stable-diffusion-webui/models/VAE
       - ${DIR_UI_CONFIG}:/home/user/stable-diffusion-webui/ui-config-user.json
       - ${DIR_UI_SETTINGS}:/home/user/stable-diffusion-webui/config-user.json
       - ${DIR_WEBUI_SETTINGS}:/home/user/stable-diffusion-webui/webui-user.sh
