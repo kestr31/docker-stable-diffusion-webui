@@ -25,7 +25,7 @@ if [ ! -d "${SD_DATA_DIR}" ]; then
     
     echo -e "[INFO]\t DIRECTORIES CREATED."
 else
-    echo -e "[INFO]\t DIRECTORIES ALREADY EXISTS!"
+    echo -e "[INFO]\t DIRECTORIES ALREADY EXIST!"
 fi
 
 sed -i "s#<YOUR_DIRECTORY_TO_SD>#${SD_DATA_DIR}#g" ./run.env
