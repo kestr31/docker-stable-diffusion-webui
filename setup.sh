@@ -1,6 +1,6 @@
 #! /bin/bash
 
-SD_DATA_DIR="/home/${USER}/Documents/Stable-Diffusion-WebUI"
+SD_DATA_DIR="/home/${USER}/Documents/Stable-diffusion-WebUI"
 
 UID=$(id -u)
 GID=$(id -g)
@@ -9,7 +9,7 @@ sed -i "s/<YOUR_UID>/${UID}/g" ./run.env
 sed -i "s/<YOUR_GID>/${GID}/g" ./run.env
 
 echo -e "[INFO]\t SD WEBUI DIRECTORY WILL BE CREATED ON:"
-echo -e "[INFO]\t\t /home/${USER}/Documents/Stable-Diffusion-WebUI"
+echo -e "[INFO]\t\t ${SD_DATA_DIR}"
 
 if [ ! -d "${SD_DATA_DIR}" ]; then
     mkdir ${SD_DATA_DIR} \
