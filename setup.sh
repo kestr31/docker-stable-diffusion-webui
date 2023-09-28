@@ -19,9 +19,9 @@ if [ ! -d "${SD_DATA_DIR}" ]; then
         ${SD_DATA_DIR}/extensions
     
     touch ${SD_DATA_DIR}/ui-config-user.json
-    touch ${SD_DATA_DIR}/config-user.json
+    # touch ${SD_DATA_DIR}/config-user.json
     cp ./webui-user.sh ${SD_DATA_DIR}/webui-user.sh
-    echo "INITIAL_PASSWORD" >> ${SD_DATA_DIR}/gradio_auth.txt
+    echo "user:INITIAL_PASSWORD" >> ${SD_DATA_DIR}/gradio_auth.txt
     
     echo -e "[INFO]\t DIRECTORIES CREATED."
 else
@@ -30,4 +30,5 @@ fi
 
 sed -i "s#<YOUR_DIRECTORY_TO_SD>#${SD_DATA_DIR}#g" ./run.env
 
+docker compose --env-file run.env down
 docker compose --env-file run.env up

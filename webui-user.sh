@@ -16,8 +16,7 @@ export COMMANDLINE_ARGS="--listen \
     --gradio-auth-path ${DIR_GRADIO_AUTH} \
     --styles-file styles/styles.csv \
     --no-download-sd-model \
-    --ui-config-file /home/user/stable-diffusion-webui/ui-config-user.json \
-    --ui-settings-file /home/user/stable-diffusion-webui/config-user.json"
+    --ui-config-file /home/user/stable-diffusion-webui/settings/ui-config-user.json"
 
 # python3 executable
 #python_cmd="python3"
