@@ -48,6 +48,8 @@ FROM stage_deps as stage_app
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
+ARG SD_WEBUI_VERSION
+
 ENV \
     DEBIAN_FRONTEND=noninteractive \
     FORCE_CUDA=1 \
@@ -64,27 +66,21 @@ USER user
 
 # CLONE AND PREPARE FOR THE SETUP OF SD-WEBUI
 RUN \ 
-    git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git -b v1.6.0 \
-    && sed -i \
-        "s/#export COMMANDLINE_ARGS=\"\"/export COMMANDLINE_ARGS=\"\
-            --listen \
-            --xformers \
-            --skip-torch-cuda-test \
-            --styles-file styles\/styles.csv \
-            --no-download-sd-model \
-            --enable-insecure-extension-access\"/g" \
-        /home/user/stable-diffusion-webui/webui-user.sh \
-    && chmod +x /home/user/stable-diffusion-webui/webui-user.sh
+    git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git -b ${SD_WEBUI_VERSION:-v1.6.0}
+WORKDIR /home/user/stable-diffusion-webui
 
 RUN \
     mkdir /home/user/stable-diffusion-webui/outputs \
     && mkdir /home/user/stable-diffusion-webui/styles
 
+# RUN \
+#     wget -O \
+#         /home/user/stable-diffusion-webui/models/Stable-diffusion/v1-5-pruned-emaonly.safetensors \
+#         https://huggingface.co/runwayml/stable-diffusion-v1-5/resolve/main/v1-5-pruned-emaonly.safetensors \
+#     && ./webui.sh --xformers --skip-torch-cuda-test --no-download-sd-model --exit
+
 RUN \
-    wget -O \
-        /home/user/stable-diffusion-webui/models/Stable-diffusion/v1-5-pruned-emaonly.safetensors \
-        https://huggingface.co/runwayml/stable-diffusion-v1-5/resolve/main/v1-5-pruned-emaonly.safetensors \
-    && /home/user/stable-diffusion-webui/webui.sh --xformers --skip-torch-cuda-test --no-download-sd-model --exit
+    ./webui.sh --xformers --skip-torch-cuda-test --no-download-sd-model --exit
 
 # INCLUDE AUTO COMPLETION JAVASCRIPT
 RUN \
@@ -93,8 +89,6 @@ RUN \
 
 # COPY entrypoint.sh
 COPY --chmod=775 scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
-
-WORKDIR /home/user/stable-diffusion-webui
 USER root
 
 # PORT AND ENTRYPOINT, USER SETTINGS
@@ -103,11 +97,14 @@ ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
 
 # DOCKER IAMGE LABELING
 LABEL title="Stable-Diffusion-Webui-Docker"
-LABEL version="1.6.0"
+LABEL version=${SD_WEBUI_VERSION:-v1.6.0}
 
 # ---------- BUILD COMMAND ----------
-# DOCKER_BUILDKIT=1 docker build --no-cache \
+# DOCKER_BUILDKIT=1 BUILDKIT_PROGRESS=plain \
+# SD_WEBUI_VERSION=v1.6.0 && \
+#  docker build --no-cache \
 # --build-arg BASEIMAGE=nvidia/cuda \
 # --build-arg BASETAG=11.7.1-cudnn8-devel-ubuntu22.04 \
-# -t kestr3l/stable-diffusion-webui:1.6.0 \
+# --build-arg SD_WEBUI_VERSION=${SD_WEBUI_VERSION} \
+# -t kestr3l/stable-diffusion-webui:${SD_WEBUI_VERSION} \
 # -f Dockerfile .
