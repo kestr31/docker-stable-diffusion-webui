@@ -17,7 +17,7 @@ services:
       - ${DIR_MODELS}:/home/user/stable-diffusion-webui/models
       - ${DIR_OUT}:/home/user/stable-diffusion-webui/outputs
       - ${DIR_STYLES}:/home/user/stable-diffusion-webui/styles
-      - ${DIR_EXTENSIONS}:/home/user/stable-diffusion-webui/models/extensions
+      - ${DIR_EXTENSIONS}:/home/user/stable-diffusion-webui/extensions
       - ${DIR_UI_CONFIG}:/home/user/stable-diffusion-webui/settings/ui-config-user.json
       # - ${DIR_UI_SETTINGS}:/home/user/stable-diffusion-webui/settings/config-user.json
       - ${DIR_WEBUI_SETTINGS}:/home/user/stable-diffusion-webui/settings/webui-user.sh
