@@ -35,7 +35,7 @@ EchoYellow "[$(basename "$0")] IMAGE NAME: ${1}:${2}"
 docker build \
     --tag=${1}:${REPO_VERSION}-${2} \
     --build-arg BASEIMAGE=docker.io/nvidia/cuda \
-    --build-arg BASETAG=${2}-runtime-ubuntu22.04 \
+    --build-arg BASETAG=${2}-devel-ubuntu22.04 \
     -f ${REPO_DIR}/Dockerfile ${REPO_DIR}
 
 EchoGreen "[$(basename "$0")] DOCKER IMAGE BUILT SUCCESSFULLY"

@@ -3,12 +3,12 @@
 > This version is completely incompatible with previous versions due to major changes.
 > Please backup your data before updating.
 
-- Based on `nvidia/cuda:12.2.2-runtime-ubuntu22.04`.
+- Based on `nvidia/cuda:12.2.2-devel-ubuntu22.04`.
     - However, due to following characteristics, more CUDA variants will be provided.
 - **Container version is now "decoupled" from the Stable-Diffusion-WebUI version**.
   - The container will only include `apt` dependencied required for the Stable-Diffusion-WebUI.
     - That is, the container will load the Stable-Diffusion-WebUI from the mounted volume on `/home/user/workspace`.
-  - Along with the changing base image from `dev` variant of `nvidia/cuda` to `runtime` variant, **the container size is now reduced to about 2.5 GB from about 10 GB**.
+    - Due to thie changes, **the container size is now reduced to about 7 GB from about 10 GB**.
 - **Added convenience scrips to run / stop / debug the SD-WebUI container.**
   - For example, you now only need to run `./scripts/sd-webui.sh run` to deploy the container.
   - Please refer to the [README.md](./README.md) for more information.
