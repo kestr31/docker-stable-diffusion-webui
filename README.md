@@ -46,7 +46,7 @@
     - By default `--listen` argument is set. Please be aware of the security issues.
     - I strongly recommend to block port or set password as soon as possible.
 
-> The container name will be default to `sd-webui`. This value is hardcoded in `run.env`.
+> The container name will be default to `sd-webui`. This value is hardcoded in `run.env`. CUDA version and sd-webui version to use are also hardcoded in `run.env`.
 
 ### 1.3. Stop `docker-stable-diffusion-webui` Docker Container
 
