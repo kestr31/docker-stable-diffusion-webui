@@ -43,7 +43,7 @@ usage(){
 if [ $# -eq 0 ] || [ $# -gt 2 ]; then
     usage $0
 else
-    if [ "$1x" != "runx" ] && [ "$1x" != "stopx" ] && [ "$1x" != "debugx" ]; then
+    if [ "$1x" != "runx" ] && [ "$1x" != "startx" ] && [ "$1x" != "downx" ] && [ "$1x" != "stopx" ] && [ "$1x" != "debugx" ]; then
         EchoRed "[$(basename "$0")] INVALID INPUT. PLEASE USE \"run\", \"stop\", OR \"debug\"."
         exit 1
     else
@@ -102,7 +102,31 @@ if [ "$1x" == "runx" ]; then
     EchoGreen "[$(basename "$0")] SD-WEBUI CONTAINER RUNNING SUCCESSFULLY"
     EchoBoxLine
 
-elif [ "$1x" == "stopx" ]; then
+elif [ "$1x" == "startx" ]; then
+    # STOP THE SD-WEBUI CONTAINER
+
+    # CHECK IF compose.yml EXISTS IN WORKSPACE DIRECTORY
+    if [ -f ${WORKSPACE_DIR}/compose.yml ] && [ -f ${WORKSPACE_DIR}/run.env ]; then
+        EchoYellow "[$(basename "$0")] STOPPING SD-WEBUI CONTAINER"
+
+        docker compose \
+            -f ${WORKSPACE_DIR}/compose.yml \
+            --env-file ${WORKSPACE_DIR}/run.env \
+            start
+
+        EchoGreen "[$(basename "$0")] SD-WEBUI CONTAINER STARTED SUCCESSFULLY"
+
+        EchoBoxLine
+    else
+        EchoRed "[$(basename "$0")] compose.yml OR run.env NOT FOUND IN WORKSPACE DIRECTORY"
+        EchoRed "[$(basename "$0")] PLEASE RUN THE SD-WEBUI CONTAINER FIRST"
+        EchoRed "[$(basename "$0")] IF YOU DID, PLEASE CHECK IF compose.yml EXISTS IN ${WORKSPACE_DIR}"
+
+        EchoBoxLine
+        exit 1
+    fi
+
+elif [ "$1x" == "downx" ]; then
     # STOP THE SD-WEBUI CONTAINER
 
     # CHECK IF compose.yml EXISTS IN WORKSPACE DIRECTORY
@@ -113,6 +137,30 @@ elif [ "$1x" == "stopx" ]; then
             -f ${WORKSPACE_DIR}/compose.yml \
             --env-file ${WORKSPACE_DIR}/run.env \
             down
+
+        EchoGreen "[$(basename "$0")] SD-WEBUI CONTAINER DOWN SUCCESSFULLY"
+
+        EchoBoxLine
+    else
+        EchoRed "[$(basename "$0")] compose.yml OR run.env NOT FOUND IN WORKSPACE DIRECTORY"
+        EchoRed "[$(basename "$0")] PLEASE RUN THE SD-WEBUI CONTAINER FIRST"
+        EchoRed "[$(basename "$0")] IF YOU DID, PLEASE CHECK IF compose.yml EXISTS IN ${WORKSPACE_DIR}"
+
+        EchoBoxLine
+        exit 1
+    fi
+
+elif [ "$1x" == "stopx" ]; then
+    # STOP THE SD-WEBUI CONTAINER
+
+    # CHECK IF compose.yml EXISTS IN WORKSPACE DIRECTORY
+    if [ -f ${WORKSPACE_DIR}/compose.yml ] && [ -f ${WORKSPACE_DIR}/run.env ]; then
+        EchoYellow "[$(basename "$0")] STOPPING SD-WEBUI CONTAINER"
+
+        docker compose \
+            -f ${WORKSPACE_DIR}/compose.yml \
+            --env-file ${WORKSPACE_DIR}/run.env \
+            stop
 
         EchoGreen "[$(basename "$0")] SD-WEBUI CONTAINER STOPPED SUCCESSFULLY"
 
