@@ -28,7 +28,10 @@ services:
       resources:
         reservations:
           devices:
-            - capabilities: [gpu]
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+  
 # secrets:
 #   gradio_auth:
 #     file: ${DIR_GRADIO_AUTH}
