@@ -1,7 +1,7 @@
 # Stable-Diffusion-Webui-Docker
 
 - Dockerized Stable-Diffusion-Webui based on [AUTOMATIC1111/stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui)
-- Image is based on nvidia/cuda:12.2.2-devel-ubuntu22.04 
+- Image is based on `nvidia/cuda:12.8.1-devel-ubuntu22.04`.
 - Prebuilt images are available on Docker Hub:
   - [kestr3l/stable-diffusion-webui](https://hub.docker.com/r/kestr3l/stable-diffusion-webui)
 
