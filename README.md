@@ -1,4 +1,5 @@
 # Stable-Diffusion-Webui-Docker
+
 - Dockerized Stable-Diffusion-Webui based on [AUTOMATIC1111/stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui)
 - Image is based on nvidia/cuda:12.2.2-devel-ubuntu22.04 
 - Prebuilt images are available on Docker Hub:
@@ -18,11 +19,12 @@
 ### 1.1 Building the Docker Image
 
 - Use convenience script `build.sh` to build your own image.
+- SD-WebUI version to use is hardcoded in `build.sh`.
 
 ```bash
 ./scripts/build.sh <IMAGE_NAME> <CUDA_VERSION>
-# Example: ./scripts/build.sh kestr3l/stable-diffusion-webui 12.2.2
-# This will build "kestr3l/stable-diffusion-webui:1.3.0-12.2.2"
+# Example: ./scripts/build.sh kestr3l/stable-diffusion-webui 12.8.1
+# This will build "kestr3l/stable-diffusion-webui:v1.10.1-12.8.1"
 ```
 
 > The variable "${REPO_VERSION}" is hardcoded in the script.
@@ -31,9 +33,12 @@
 
 - Run `sd-webui.sh` to deploy the container
 - By default, the script will make a workspace directory at `${HOME}/Documents/sd-webui`.
-    - Then, the script will copy `compose.yml` and `run.env` to the workspace.
-    - Values that need to be changed will be modified automatically.
-    - Lastly, the script will clone the `stable-diffusion-webui` repository to the workspace and run the container.
+  - Then, the script will copy `compose.yml` and `run.env` to the workspace.
+  - Values that need to be changed will be modified automatically.
+  - Lastly, the script will clone the `stable-diffusion-webui` repository to the workspace and run the container.
+- At the first run, it will take a while to download the dependencies.
+  - Unless you remove a container, it will not download the dependencies again.
+  - To check the progress, you can use `docker logs` command.
 
 ```bash
 ./scripts/sd-webui.sh run <WORKSPACE_DIR (Optional)>
@@ -43,8 +48,8 @@
 ```
 
 - After running the script, you can access the webui at `http://localhost:8000`.
-    - By default `--listen` argument is set. Please be aware of the security issues.
-    - I strongly recommend to block port or set password as soon as possible.
+  - By default `--listen` argument is set. Please be aware of the security issues.
+  - I strongly recommend to block port or set password as soon as possible.
 
 > The container name will be default to `sd-webui`. This value is hardcoded in `run.env`. CUDA version and sd-webui version to use are also hardcoded in `run.env`.
 
@@ -81,10 +86,10 @@ WEBUI_PORT=7860
 ### 2.2. Adding additional arguments to `stable-diffusion-webui`
 
 - Resources of `stable-diffusion-webui` if located at `${HOME}/Documents/sd-webui/stable-diffusion-webui` by default.
-    - It may vary based on your workspace setting.
+  - It may vary based on your workspace setting.
 - You can add additional arguments to `stable-diffusion-webui` by modifying `webui-user.sh` file.
-    - By default, `--listen --enable-insecure-extension-access` is set.
-    - Check the [official documentation](https://github.com/AUTOMATIC1111/stable-diffusion-webui/wiki/Command-Line-Arguments-and-Settings) for more information.
+  - By default, `--listen --enable-insecure-extension-access` is set.
+  - Check the [official documentation](https://github.com/AUTOMATIC1111/stable-diffusion-webui/wiki/Command-Line-Arguments-and-Settings) for more information.
 
 ```bash
 ...
@@ -100,3 +105,5 @@ export COMMANDLINE_ARGS="--gradio-auth yourAccount:yourPass --xformers"
 ## 3 References
 
 1. [AUTOMATIC1111/stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui)
+
+---

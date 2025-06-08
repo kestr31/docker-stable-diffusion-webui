@@ -2,7 +2,7 @@ ARG BASEIMAGE
 ARG BASETAG
 
 # STAGE FOR CACHING APT PACKAGE LIST
-FROM ${BASEIMAGE}:${BASETAG} as stage_apt
+FROM ${BASEIMAGE}:${BASETAG} AS stage_apt
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -17,7 +17,7 @@ RUN \
 	&& apt-get update
 
 # STAGE FOR INSTALLING APT DEPENDENCIES
-FROM ${BASEIMAGE}:${BASETAG} as stage_deps
+FROM ${BASEIMAGE}:${BASETAG} AS stage_deps
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 

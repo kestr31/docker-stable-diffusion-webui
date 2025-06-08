@@ -18,7 +18,7 @@ REPO_DIR=$(dirname ${BASE_DIR})
 source ${BASE_DIR}/commonFcn.sh
 
 # HARDCODED VERSION VALUE
-REPO_VERSION="1.3.0"
+REPO_VERSION="v1.10.1"
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
